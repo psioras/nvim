@@ -1,29 +1,36 @@
 return {
-	"catppuccin/nvim",
-	name = "catppuccin",
-	priority = 1000,
-	opts = {
-		flavour = "mocha", -- This is the darkest base (dark grey)
-		transparent_background = true, -- Set to true if your terminal is already black
-		color_overrides = {
-			mocha = {
-				base = "#000000", -- This makes the main background PITCH BLACK
-				mantle = "#010101", -- Slightly lighter for a subtle contrast
-				crust = "#000000", -- Bottom bars and corners
-			},
-		},
-		integrations = {
-			cmp = true,
-			gitsigns = true,
-			nvimtree = true,
-			treesitter = true,
-			telescope = {
-				enabled = true,
-			},
-		},
-	},
-	config = function(_, opts)
-		require("catppuccin").setup(opts)
-		vim.cmd.colorscheme("catppuccin")
-	end,
+  "catppuccin/nvim",
+  name = "catppuccin",
+  priority = 1000,
+  config = function()
+    require("catppuccin").setup({
+      integrations = {
+        treesitter = true,
+        native_lsp = {
+          enabled = true,
+          underlines = {
+            errors = { "undercurl" },
+            warnings = { "undercurl" },
+          },
+        },
+        fidget = true,
+        trouble = true,
+      },
+    })
+
+    -- Always start with mocha
+    vim.g.catppuccin_flavour = "mocha"
+    vim.cmd.colorscheme("catppuccin-mocha")
+
+    -- <leader>tt to toggle between mocha and frappe
+    vim.keymap.set("n", "<leader>tt", function()
+      if vim.g.catppuccin_flavour == "mocha" then
+        vim.g.catppuccin_flavour = "frappe"
+      else
+        vim.g.catppuccin_flavour = "mocha"
+      end
+      vim.cmd.colorscheme("catppuccin-" .. vim.g.catppuccin_flavour)
+      vim.notify("Theme: catppuccin-" .. vim.g.catppuccin_flavour, vim.log.levels.INFO)
+    end, { desc = "Toggle Catppuccin Frappé/Mocha" })
+  end,
 }
